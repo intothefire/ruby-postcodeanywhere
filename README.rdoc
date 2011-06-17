@@ -1,6 +1,6 @@
 = ruby-postcodeanywhere
 
-Description goes here.
+Ruby gem exposing the functionality of PostcodeAnywhere web services (specifically PAF related service)
 
 == Contributing to ruby-postcodeanywhere
  
