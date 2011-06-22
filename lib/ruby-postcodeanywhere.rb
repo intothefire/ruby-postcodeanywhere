@@ -7,9 +7,9 @@ module PostcodeAnywhere
 
   # Account codes to access the PostcodeAnywhere Service
   mattr_accessor :account_code
-  @@account_code = nil
+  @@account_code = "TEST"
   mattr_accessor :license_code
-  @@license_code = nil
+  @@license_code = "TEST"
 
   # Default way to setup Devise. Run rails generate devise_install to create
   # a fresh initializer with all configuration values.

@@ -55,5 +55,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, ["~> 1.6.2"])
     s.add_dependency(%q<rcov>, [">= 0"])
   end
+  
+  s.add_dependency(%q<httparty>, [">= 0"])
 end
 

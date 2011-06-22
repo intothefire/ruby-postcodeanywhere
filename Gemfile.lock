@@ -1,8 +1,11 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    crack (0.1.8)
     diff-lcs (1.1.2)
     git (1.2.5)
+    httparty (0.7.8)
+      crack (= 0.1.8)
     jeweler (1.6.2)
       bundler (~> 1.0)
       git (>= 1.2.5)
@@ -22,7 +25,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.0.0)
+  bundler
+  httparty
   jeweler (~> 1.6.2)
   rcov
   rspec (~> 2.3.0)
