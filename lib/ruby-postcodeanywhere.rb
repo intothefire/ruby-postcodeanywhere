@@ -2,10 +2,10 @@ require 'httparty'
 
 module PostcodeAnywhere
   
-  ADDRESS_LOOKUP = "http://services.postcodeanywhere.co.uk/xml.aspx"
-  ADDRESS_FETCH = "http://services.postcodeanywhere.co.uk/dataset.aspx?action=fetch"
+  ADDRESS_LOOKUP = "https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/Find/v1.10/xmla.ws"
+  ADDRESS_FETCH = "https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/RetrieveById/v1.20/xmla.ws"
   
-  RETRIEVE_BY_PARTS_URL = "http://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/RetrieveByParts/v1.00/xmla.ws?"
+  RETRIEVE_BY_PARTS_URL = "https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/RetrieveByParts/v1.00/xmla.ws"
 
   # Account codes to access the PostcodeAnywhere Service
   mattr_accessor :account_code
@@ -22,112 +22,98 @@ module PostcodeAnywhere
   	include HTTParty
   	format :xml
 
-  	attr_accessor :postcode, :country_code, :fetch_id, :building
-
-    def initialize(args={})
-      self.postcode = args[:postcode]
-      self.country_code = args[:country_code]
-      self.fetch_id = args[:fetch_id]
-    end
-
-  	def lookup
-  		data = PostcodeSearch.get self.lookup_url
+  	def lookup(postcode)
+  	  options={ "SearchTerm" => postcode }
+      options.merge!(self.license_information)
+      
+  		data = PostcodeSearch.get( ADDRESS_LOOKUP, {:query => options} )
   		formatted_data = []
-  		unless data["PostcodeAnywhere"]["Schema"]["Field"][0]["Name"] == "error_number"
-  		  formatted_data = data["PostcodeAnywhere"]["Data"]["Item"]
+	    
+	    raise 'No Data Found' if data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
+	    
+  		unless data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
+  		  data.parsed_response["Table"]["Rows"]["Row"].each do |item|
+  		    data_item = AddressListItem.new
+  		    data_item.id = item['Id']
+  		    data_item.street_address = item['StreetAddress']
+  		    data_item.place = item['Place']
+  		    
+  		    formatted_data << data_item
+		    end
   		end
   		formatted_data
   	end
 
-  	def fetch_by_parts
-  		data = PostcodeSearch.get self.fetch_by_parts_url
-  		formatted_data = data["NewDataSet"]["Data"]
-  		@address_lookup = AddressLookup.new
+  	def fetch_by_parts(options={})
+      options.merge!(self.license_information)
       
-      if self.country_code == 'GB'
-        @address_lookup.postcode = formatted_data["postcode"]
-        @address_lookup.address_line_1 = formatted_data["line1"]
-        @address_lookup.address_line_2 = formatted_data["line2"]
-        @address_lookup.address_line_3 = formatted_data["line3"]
-        @address_lookup.post_town = formatted_data["post_town"]
-        @address_lookup.county = formatted_data["county"].blank? ? formatted_data["post_town"] : formatted_data["county"]
+      if options['postcode']
+        options['postcode'] = options['postcode'].gsub(/\s/, '')
       end
       
-      @address_lookup
+  		data = PostcodeSearch.get( RETRIEVE_BY_PARTS_URL, {:query => options} )
+  		
+  		process_address(data)
   	end
 
-  	def fetch
-  		data = PostcodeSearch.get self.fetch_url
-  		formatted_data = data["NewDataSet"]["Data"]
-  		@address_lookup = AddressLookup.new
-      if self.country_code == 'GB'
-        @address_lookup.postcode = formatted_data["postcode"]
-        @address_lookup.address_line_1 = formatted_data["line1"]
-        @address_lookup.address_line_2 = formatted_data["line2"]
-        @address_lookup.address_line_3 = formatted_data["line3"]
-        @address_lookup.post_town = formatted_data["post_town"]
-        @address_lookup.county = formatted_data["county"].blank? ? formatted_data["post_town"] : formatted_data["county"]
-      elsif self.country_code == 'US'
-        @address_lookup.postcode = formatted_data["zip4"].blank? ? @postcode_search.postcode : formatted_data["zip4"]
-        @address_lookup.address_line_1 = formatted_data["line1"]
-        @address_lookup.address_line_2 = formatted_data["line2"]
-        @address_lookup.address_line_3 = formatted_data["line3"]
-        @address_lookup.post_town = formatted_data["city"]
-        @address_lookup.county = formatted_data["county_name"]+", "+formatted_data["state"]
-      else
-
-      end
-      @address_lookup
-  	end
-
-  	def lookup_url
-  		ADDRESS_LOOKUP+"?"+self.lookup_type+"&"+self.postcode_with_no_spaces+self.selected_country+"&"+self.license_information
-  	end
-
-  	def fetch_by_parts_url
-  		RETRIEVE_BY_PARTS_URL+"&"+self.address_building+"&"+self.address_fetch_id+self.selected_country+"&"+self.license_information
-  	end
-	
-	  def selected_country
-	    if self.country_code == "GB"
-  			""
-  		else
-  			"&country="+self.country_code
-  		end
-	  end
-
-  	def address_fetch_id
-  		"id="+self.fetch_id
-  	end
-
-  	def address_building
-  		"building="+self.building
-  	end
-
-  	def lookup_type
-  		if self.country_code == "GB"
-  			"action=lookup&type=by_postcode"
-  		elsif self.country_code == "US"
-  			"action=lookup&type=by_zip"
-  		else
-  			"action=international&type=fetch_streets"
-  		end
-  	end
-
-  	def postcode_with_no_spaces
-  		(self.country_code=="US" ? "zip=" : "postcode=")+self.postcode.gsub(/\s/, '')
+  	def fetch(id)
+  	  options={ :id => id }
+      options.merge!(self.license_information)
+      
+  		data = PostcodeSearch.get( ADDRESS_FETCH, {:query => options} )
+  		
+  		process_address(data)
   	end
 
   	def license_information
-  		"account_code="+PostcodeAnywhere.account_code+"&license_code="+PostcodeAnywhere.license_code
+  		{:account_code => PostcodeAnywhere.account_code, :license_code => PostcodeAnywhere.license_code}
   	end
+  	
+  	
+  	private 
+  	  def process_address(data) 		
+  	    
+  	    raise 'No Data Found' if data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
+  	    
+  	    formatted_data = data.parsed_response["Table"]["Rows"]["Row"]
+  	    
+    		address_lookup = AddressLookup.new
+        
+        address_lookup.mailsort = formatted_data["Mailsort"]
+        address_lookup.barcode = formatted_data["Barcode"]
+        address_lookup.type = formatted_data["Type"]
+        
+        address_lookup.udprn = formatted_data["Udprn"]
+        address_lookup.company = formatted_data["Company"]
+        address_lookup.department = formatted_data["Department"]
+        address_lookup.postcode = formatted_data["Postcode"]
+        address_lookup.address_line_1 = formatted_data["Line1"]
+        address_lookup.address_line_2 = formatted_data["Line2"]
+        address_lookup.address_line_3 = formatted_data["Line3"]
+        address_lookup.address_line_4 = formatted_data["Line4"]
+        address_lookup.address_line_5 = formatted_data["Line5"]
+        address_lookup.post_town = formatted_data["PostTown"]
+        address_lookup.county = formatted_data["County"].blank? ? formatted_data["PostTown"] : formatted_data["County"]
+
+
+        address_lookup
+	    end
+  	
   
   end
 
   class AddressLookup
   
-    attr_accessor :postcode, :address_line_1, :address_line_2, :address_line_3, :post_town, :county
-    attr_accessor :city, :county_name, :zip4, :state
+    attr_accessor :postcode, :address_line_1, :address_line_2, :address_line_3, :address_line_4, :address_line_5
+    attr_accessor :post_town, :county, :city, :county_name, :zip4, :state, :udprn, :company, :department
+    attr_accessor :mailsort, :barcode, :type
     
+  end  
+  
+  class AddressListItem
+
+      attr_accessor :id, :street_address, :place
+
   end
+  
 end
