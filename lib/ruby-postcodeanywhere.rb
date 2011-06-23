@@ -1,11 +1,6 @@
 require 'httparty'
 
 module PostcodeAnywhere
-  
-  ADDRESS_LOOKUP = "https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/Find/v1.10/xmla.ws"
-  ADDRESS_FETCH = "https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/RetrieveById/v1.20/xmla.ws"
-  
-  RETRIEVE_BY_PARTS_URL = "https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive/RetrieveByParts/v1.00/xmla.ws"
 
   # Account codes to access the PostcodeAnywhere Service
   mattr_accessor :account_code
@@ -18,8 +13,14 @@ module PostcodeAnywhere
   end
   
   class PostcodeSearch 
-  
   	include HTTParty
+  	
+  	base_uri 'https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive'
+  	
+    ADDRESS_LOOKUP = "/Find/v1.10/xmla.ws"
+    ADDRESS_FETCH = "/RetrieveById/v1.20/xmla.ws"
+    RETRIEVE_BY_PARTS_URL = "/RetrieveByParts/v1.00/xmla.ws"
+  	
   	format :xml
 
   	def lookup(postcode)
