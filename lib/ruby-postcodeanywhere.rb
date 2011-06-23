@@ -12,7 +12,7 @@ module PostcodeAnywhere
     yield self
   end
   
-  class PostcodeSearch 
+  module PostcodeSearch 
   	include HTTParty
   	
   	base_uri 'https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive'
@@ -20,11 +20,12 @@ module PostcodeAnywhere
     ADDRESS_LOOKUP = "/Find/v1.10/xmla.ws"
     ADDRESS_FETCH = "/RetrieveById/v1.20/xmla.ws"
     RETRIEVE_BY_PARTS_URL = "/RetrieveByParts/v1.00/xmla.ws"
-  	
-  	format :xml
 
   	def lookup(postcode)
-  	  options={ "SearchTerm" => postcode }
+  	  
+  	  raise "Postcode is Required" if postcode.blank? || postcode.nil?
+  	  
+  	  options={ "SearchTerm" => postcode.gsub(/\s/, '') }
       options.merge!(self.license_information)
       
   		data = PostcodeSearch.get( ADDRESS_LOOKUP, {:query => options} )
