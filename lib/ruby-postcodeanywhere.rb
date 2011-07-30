@@ -31,7 +31,7 @@ module PostcodeAnywhere
   		data = PostcodeSearch.get( ADDRESS_LOOKUP, {:query => options} )
   		formatted_data = []
 	    
-	    raise 'No Data Found' if data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
+	    return formatted_data if data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
 	    
   		unless data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
   		  data.parsed_response["Table"]["Rows"]["Row"].each do |item|
