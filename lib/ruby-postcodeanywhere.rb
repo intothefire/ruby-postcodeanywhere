@@ -36,14 +36,25 @@ module PostcodeAnywhere
 	    puts formatted_data
 	    
   		unless data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
-  		  data.parsed_response["Table"]["Rows"]["Row"].each do |item|
+  		  
+  		  begin
+  	  	  data.parsed_response["Table"]["Rows"]["Row"].each do |item|
+    		    data_item = AddressListItem.new
+    		    data_item.id = item['Id']
+    		    data_item.street_address = item['StreetAddress']
+    		    data_item.place = item['Place']
+  		    
+    		    formatted_data << data_item
+  		    end
+  	    rescue
+  	      item = data.parsed_response["Table"]["Rows"]["Row"]
   		    data_item = AddressListItem.new
   		    data_item.id = item['Id']
   		    data_item.street_address = item['StreetAddress']
   		    data_item.place = item['Place']
-  		    
+		    
   		    formatted_data << data_item
-		    end
+        end
   		end
   		formatted_data
   	end
