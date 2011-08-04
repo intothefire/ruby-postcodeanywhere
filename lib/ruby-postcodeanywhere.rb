@@ -12,7 +12,7 @@ module PostcodeAnywhere
     yield self
   end
   
-  module PostcodeSearch 
+  class PostcodeSearch 
   	include HTTParty
   	
   	base_uri 'https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive'
@@ -32,6 +32,8 @@ module PostcodeAnywhere
   		formatted_data = []
 	    
 	    return formatted_data if data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
+	    
+	    puts formatted_data
 	    
   		unless data.parsed_response['Table']['Columns']['Column'][0]['Name'] == "Error"
   		  data.parsed_response["Table"]["Rows"]["Row"].each do |item|
