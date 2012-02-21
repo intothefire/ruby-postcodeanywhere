@@ -10,4 +10,5 @@ group :development do
   gem "bundler"
   gem "jeweler", "~> 1.6.2"
   gem "rcov", ">= 0"
+  gem "webmock", :require => false
 end

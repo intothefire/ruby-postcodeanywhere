@@ -2,6 +2,7 @@ require 'httparty'
 require 'active_support/core_ext/module/attribute_accessors'
 
 module PostcodeAnywhere
+  autoload :BankAccountValidation, 'postcode_anywhere/bank_account_validation'
 
   # Account codes to access the PostcodeAnywhere Service
   mattr_accessor :account_code
@@ -137,5 +138,5 @@ module PostcodeAnywhere
       attr_accessor :id, :street_address, :place
 
   end
-
 end
+
