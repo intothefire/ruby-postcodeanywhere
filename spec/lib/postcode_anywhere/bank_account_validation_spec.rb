@@ -33,11 +33,23 @@ describe PostcodeAnywhere::BankAccountValidation do
     JSON
   end
 
+  let :json_error_response do
+    <<-JSON
+{
+    "Items": [
+        {
+            "Error": "1002",
+            "Description": "SortCode Invalid",
+            "Cause": "SortCode Invalid",
+            "Resolution": "The SortCode parameter should be 6 digits in the form 00-00-00 or 000000. It should be prefixed with leading 0s if necessary."
+        }
+    ]
+}
+    JSON
+  end
+
   it "sends a valid request when validating a bank account" do
-    stub_request(:get,
-                 'https://services.postcodeanywhere.co.uk/BankAccountValidation/Interactive/Validate/v2.00/json3.ws?AccountNumber=account_number&Key=key&SortCode=sort_code'
-                 ).to_return(:body => json_response)
-    ret = subject.validate('sort_code', 'account_number')
+    ret = make_bav_request :response => json_response
     
     ret.should_not be_correct
     ret.should_not be_direct_debit_capable
@@ -59,6 +71,24 @@ describe PostcodeAnywhere::BankAccountValidation do
     ret.should_not be_faster_payments_supported
     ret.chaps_supported.should == false
     ret.should_not be_chaps_supported
+  end
+  
+  it "handles errors" do
+    begin
+      make_bav_request :response => json_error_response
+      fail 'should raise exception'
+    rescue PostcodeAnywhere::BankAccountException => e
+      e.error.should == 1002
+      e.description.should == "SortCode Invalid"
+      e.cause.should == "SortCode Invalid"
+      e.resolution.should == "The SortCode parameter should be 6 digits in the form 00-00-00 or 000000. It should be prefixed with leading 0s if necessary."
+    end
+  end
+  def make_bav_request(options)
+    stub_request(:get,
+                 'https://services.postcodeanywhere.co.uk/BankAccountValidation/Interactive/Validate/v2.00/json3.ws?AccountNumber=account_number&Key=key&SortCode=sort_code'
+                 ).to_return(:body => options[:response])
+    ret = subject.validate('sort_code', 'account_number')
   end
 end
 

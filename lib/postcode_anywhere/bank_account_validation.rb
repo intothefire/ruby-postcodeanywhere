@@ -13,18 +13,23 @@ module PostcodeAnywhere
     def validate(sort_code, account_number)
       http_response = self.class.get('', :query => {:SortCode => sort_code, :AccountNumber => account_number})
 
+      r = unwrap_response(http_response)
+      
+      if r["Error"]
+        raise BankAccountException, r
+      else
+        BankAccountResult.new(r)
+      end
+    end
+    
+    protected
+    def unwrap_response(http_response)
       r = JSON.parse(http_response)
       raise unless r.length == 1
       r = r["Items"]
       raise unless r.length == 1
-      r = r[0]
-      
-      r2 = BankAccountResult.new
-      r.each do |k, v|
-        r2.send "#{k.underscore}=", v
-      end
 
-      r2
+      r[0]
     end
   end
 
@@ -49,6 +54,12 @@ module PostcodeAnywhere
                   :chaps_supported]
     attr_accessor *ATTRIBUTES
 
+    def initialize attributes
+      attributes.each do |k, v|
+        send "#{k.underscore}=", v
+      end
+    end
+
     def correct?
       is_correct
     end
@@ -60,6 +71,21 @@ module PostcodeAnywhere
     end
     def chaps_supported?
       chaps_supported
+    end
+  end
+
+  class BankAccountException < StandardError
+    ATTRIBUTES = [:error,
+                  :description,
+                  :cause,
+                  :resolution]
+    attr_accessor *ATTRIBUTES
+
+    def initialize(attributes)
+      self.error = attributes.delete("Error").to_i
+      attributes.each do |k,v|
+        send "#{k.underscore}=", v
+      end
     end
   end
 end
