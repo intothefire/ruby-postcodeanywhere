@@ -127,7 +127,7 @@ module PostcodeAnywhere
 
   class AddressLookup
 
-    attr_accessor :building_name, :building_number, :street, :flat, :district, :secondary_street,
+    attr_accessor :building_name, :building_number, :street, :flat, :district, :secondary_street
     attr_accessor :postcode, :address_line_1, :address_line_2, :address_line_3, :address_line_4, :address_line_5
     attr_accessor :post_town, :county, :city, :county_name, :zip4, :state, :udprn, :company, :department
     attr_accessor :mailsort, :barcode, :type
