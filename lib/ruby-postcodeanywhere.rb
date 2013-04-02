@@ -111,6 +111,7 @@ module PostcodeAnywhere
         address_lookup.address_line_5 = formatted_data["Line5"]
         address_lookup.building_name = formatted_data["BuildingName"]
         address_lookup.building_number = formatted_data["BuildingNumber"]
+        address_lookup.secondary_street = formatted_data["SecondaryStreet"]
         address_lookup.street = formatted_data["PrimaryStreet"]
         address_lookup.flat = formatted_data["SubBuilding"]
         address_lookup.district = formatted_data["DependentLocality"]
@@ -126,7 +127,7 @@ module PostcodeAnywhere
 
   class AddressLookup
 
-    attr_accessor :building_name, :building_number, :street, :flat, :district
+    attr_accessor :building_name, :building_number, :street, :flat, :district, :secondary_street,
     attr_accessor :postcode, :address_line_1, :address_line_2, :address_line_3, :address_line_4, :address_line_5
     attr_accessor :post_town, :county, :city, :county_name, :zip4, :state, :udprn, :company, :department
     attr_accessor :mailsort, :barcode, :type
