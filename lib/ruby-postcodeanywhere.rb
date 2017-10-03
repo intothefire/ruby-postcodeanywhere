@@ -17,7 +17,7 @@ module PostcodeAnywhere
   class PostcodeSearch
   	include HTTParty
 
-  	base_uri 'https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive'
+  	base_uri ENV.fetch('POSTCODE_ANYWHERE_URI', 'https://services.postcodeanywhere.co.uk/PostcodeAnywhere/Interactive')
 
     ADDRESS_LOOKUP = "/Find/v1.10/xmla.ws"
     ADDRESS_FETCH = "/RetrieveById/v1.20/xmla.ws"
