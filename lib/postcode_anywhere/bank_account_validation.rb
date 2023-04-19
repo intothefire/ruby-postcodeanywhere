@@ -7,14 +7,14 @@ require 'active_support/core_ext/string/inflections'
 module PostcodeAnywhere
   class BankAccountValidation
     include HTTParty
-    base_uri 'https://services.postcodeanywhere.co.uk/BankAccountValidation/Interactive/Validate/v2.00/json3.ws'
+    base_uri 'https://services.postcodeanywhere.co.uk/BankAccountValidation/Interactive'
     format :html
     def initialize(key)
       self.class.default_params Key: key
     end
 
     def validate(sort_code, account_number)
-      http_response = self.class.get('', query: { SortCode: sort_code, AccountNumber: account_number })
+      http_response = self.class.get('/Validate/v2.00/json3.ws', query: { SortCode: sort_code, AccountNumber: account_number })
 
       r = unwrap_response(http_response)
 
