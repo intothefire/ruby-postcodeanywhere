@@ -9,7 +9,6 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new('>= 0') if s.respond_to? :required_rubygems_version=
   s.authors = ['Chris Norman']
-  s.date = '2011-08-04'
   s.description = 'Gem to provide basic access to PostcodeAnywhere services'
   s.email = 'chris@norman.me'
   s.extra_rdoc_files = [
@@ -57,4 +56,5 @@ Gem::Specification.new do |s|
     s.add_dependency('httparty', ['>= 0'])
     s.add_dependency('rspec', ['~> 2.3.0'])
   end
+  s.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -18,11 +18,9 @@ module PostcodeAnywhere
 
       r = unwrap_response(http_response)
 
-      if r['Error']
-        raise BankAccountException, r
-      else
-        BankAccountResult.new(r)
-      end
+      raise BankAccountException, r if r['Error']
+
+      BankAccountResult.new(r)
     end
 
     protected
