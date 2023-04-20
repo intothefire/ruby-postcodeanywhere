@@ -2,14 +2,10 @@
 
 source 'http://rubygems.org'
 
-gem 'httparty'
+gemspec
 
-gem 'activesupport'
-gem 'i18n'
-
-group :development do
-  gem 'bundler'
-  gem 'jeweler', '>= 1.6.2'
+group :development, :test do
+  gem 'rake'
   gem 'rspec'
   gem 'rubocop'
   gem 'webmock', require: false

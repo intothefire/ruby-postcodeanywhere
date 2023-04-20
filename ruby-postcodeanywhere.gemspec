@@ -3,58 +3,48 @@
 # Instead, edit Jeweler::Tasks in Rakefile, and run 'rake gemspec'
 # frozen_string_literal: true
 
+# stub: ruby-postcodeanywhere 0.2.0 ruby lib
+
 Gem::Specification.new do |s|
   s.name = 'ruby-postcodeanywhere'
-  s.version = '0.1.3'
+  s.version = '0.2.0'
 
-  s.required_rubygems_version = Gem::Requirement.new('>= 0') if s.respond_to? :required_rubygems_version=
-  s.authors = ['Chris Norman']
-  s.description = 'Gem to provide basic access to PostcodeAnywhere services'
-  s.email = 'chris@norman.me'
+  s.required_ruby_version = '>= 2.5.0'
+
+  s.authors       = ['Funding Circle']
+  s.email         = ['engineering@fundingcircle.com']
+  s.summary       = 'Gem to provide basic access to PostcodeAnywhere services'
+  s.description   = 'Gem to provide basic access to PostcodeAnywhere services'
+  s.homepage      = 'http://github.com/FundingCircle/ruby-postcodeanywhere'
+  s.licenses      = ['MIT']
+
+  s.require_paths = ['lib']
   s.extra_rdoc_files = [
     'LICENSE.txt',
     'README.rdoc'
   ]
   s.files = [
     '.document',
+    '.github/workflows/ci.yml',
     '.rspec',
+    '.rubocop.yml',
+    '.rubocop_todo.yml',
+    '.ruby-version',
     'Gemfile',
     'Gemfile.lock',
     'LICENSE.txt',
-    'Postcode Anywhere.tmproj',
     'README.rdoc',
     'Rakefile',
     'VERSION',
+    'lib/postcode_anywhere/bank_account_validation.rb',
     'lib/ruby-postcodeanywhere.rb',
     'ruby-postcodeanywhere.gemspec',
-    'spec/ruby-postcodeanywhere_spec.rb',
+    'spec/lib/postcode_anywhere/bank_account_validation_spec.rb',
     'spec/spec_helper.rb'
   ]
-  s.homepage = 'http://github.com/intothefire/ruby-postcodeanywhere'
-  s.licenses = ['MIT']
-  s.require_paths = ['lib']
-  s.rubygems_version = '1.8.5'
-  s.summary = 'Gem to provide basic access to PostcodeAnywhere services'
 
-  if s.respond_to? :specification_version
-    s.specification_version = 3
+  s.add_dependency('activesupport', '>= 0')
+  s.add_dependency('httparty', '>= 0')
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0')
-      s.add_runtime_dependency('httparty', ['>= 0'])
-      s.add_development_dependency('bundler', ['>= 0'])
-      s.add_development_dependency('jeweler', ['~> 1.6.2'])
-      s.add_dependency('bundler', ['>= 0'])
-      s.add_development_dependency('rspec', ['~> 2.3.0'])
-    else
-      s.add_dependency('bundler', ['>= 0'])
-      s.add_dependency('httparty', ['>= 0'])
-      s.add_dependency('jeweler', ['~> 1.6.2'])
-      s.add_dependency('jeweler', ['~> 1.6.2'])
-      s.add_dependency('rspec', ['~> 2.3.0'])
-    end
-  else
-    s.add_dependency('httparty', ['>= 0'])
-    s.add_dependency('rspec', ['~> 2.3.0'])
-  end
   s.metadata['rubygems_mfa_required'] = 'true'
 end
