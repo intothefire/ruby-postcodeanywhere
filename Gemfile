@@ -1,14 +1,12 @@
-source "http://rubygems.org"
+# frozen_string_literal: true
 
-gem "httparty"
+source 'http://rubygems.org'
 
-gem "activesupport"
-gem "i18n"
+gemspec
 
-group :development do
-  gem "rspec"
-  gem "bundler"
-  gem "jeweler", "~> 1.6.2"
-  gem "rcov", ">= 0"
-  gem "webmock", :require => false
+group :development, :test do
+  gem 'rake'
+  gem 'rspec'
+  gem 'rubocop'
+  gem 'webmock', require: false
 end
